@@ -7,7 +7,7 @@ import { LinksPage } from '../components/Links/LinksPage.js'
 
 
 
-export const UseRoutes = isAuthenticated => {
+export const useRoutes = isAuthenticated => {
     if (isAuthenticated) {
         return (
             <Switch>

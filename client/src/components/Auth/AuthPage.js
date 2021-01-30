@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Form, Button } from 'react-bootstrap';
-import { useHttp } from '../../hooks/http.hook.js';
+import { AuthContext } from '../../context/AuthContext.js';
+import { useHttp } from '../../hooks/http.hook3.js';
 import { useMessage } from '../../hooks/message.hook.js'
 
 
@@ -8,11 +9,9 @@ import { useMessage } from '../../hooks/message.hook.js'
 
 
 export const AuthPage = () => {
+    const auth = useContext(AuthContext)
     const message = useMessage()
-
-
     const { loading, request, error, clearError } = useHttp()
-
     const [form, setForm] = useState({
         email: "", password: ""
     })
@@ -33,10 +32,15 @@ export const AuthPage = () => {
             const data = await request('/api/auth/register', "POST", { ...form })
             console.log('Data', data)
             message.apply(data.message)
+        } catch (error) { }
+    }
 
-        } catch (error) {
-
-        }
+    const loginHandler = async () => {
+        try {
+            const data = await request('/api/auth/login', "POST", { ...form })
+            console.log('Data', data)
+            auth.login(data.token, data.userId)
+        } catch (error) { }
     }
 
 
@@ -77,6 +81,8 @@ export const AuthPage = () => {
                 <div className="row g-2 justify-content-sm-center">
                     <Button
                         disabled={loading}
+                        onClick={loginHandler}
+
                         // type="submit"
                         className="col-sm-6 col-md-4  ml-1 mr-1 mb-2"
                         variant="outline-dark">
@@ -93,12 +99,6 @@ export const AuthPage = () => {
                         Sign Up
         </Button>
                 </div>
-
-
-
-
-                {/* {error && <p>{error.message}</p>} */}
-                {/* </div> */}
             </Form>
         </div>
     )
